@@ -3,7 +3,9 @@ name = "unchained"
 version = "0.1.0"
 authors = ["Nbiba Bedis <bedisnbiba@gmail.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "README.md"
+description = "Unchained Iteration"
+repository = "https://github.com/sigmaSd/Unchained"
+license = "MIT"
 
 [dependencies]
