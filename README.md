@@ -1,5 +1,5 @@
 # Unchained
-Trait that allows iteration on a collection while appliyng a function with a thread per item
+Trait that allows iterating on a collection while appliyng a function with a thread per item
 
 ## Example
 
