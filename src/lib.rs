@@ -4,17 +4,23 @@ use std::thread;
 pub trait Unchained
 where
     Self: Iterator + Sized,
+    Self::Item: Send + 'static,
 {
     /// apply the provided function to each item in the iterator using a thread per item
-    fn unchained_for_each<F>(self, f: F) -> UnchainedForEach<Self, F>
+    fn unchained_for_each<F>(self, f: F)
     where
-        F: FnMut(Self::Item) + Send + Sync + 'static,
+        F: FnMut(Self::Item) + Sized + Send + Sync + Clone + 'static,
     {
         UnchainedForEach::new(self, f)
+            .collect::<Vec<thread::JoinHandle<()>>>()
+            .into_iter()
+            .for_each(|t| {
+                let _ = t.join();
+            });
     }
 }
 
-impl<I: Iterator> Unchained for I {}
+impl<I: Iterator> Unchained for I where I::Item: Send + 'static {}
 
 /// this `struct` is created by [`unchained_for_each`] method on `Iterator`
 ///
@@ -49,25 +55,6 @@ where
     }
 }
 
-/// trait to join all of the iterator threads easily
-pub trait Finisher {
-    fn join(self);
-}
-
-impl<T> Finisher for T
-where
-    T: Iterator<Item = thread::JoinHandle<()>>,
-{
-    /// join all of the iterator threads
-    fn join(self) {
-        self.collect::<Vec<thread::JoinHandle<()>>>()
-            .into_iter()
-            .for_each(|t| {
-                let _ = t.join();
-            })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,17 +67,14 @@ mod tests {
     }
 
     fn ddos_all(targets: Vec<&'static str>) {
-        targets
-            .into_iter()
-            .unchained_for_each(|t| {
-                std::process::Command::new("ping")
-                    .arg(t)
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap();
-            })
-            .join();
+        targets.into_iter().unchained_for_each(|t| {
+            std::process::Command::new("ping")
+                .arg(t)
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
+        });
     }
 
     #[test]
@@ -108,23 +92,27 @@ mod tests {
     }
 
     fn download_all(pages: Vec<&'static str>) {
-        pages
-            .into_iter()
-            .unchained_for_each(|page| {
-                println!(
-                    "{}:\n\n{}",
-                    &page,
-                    String::from_utf8(
-                        std::process::Command::new("curl")
-                            .arg(&page)
-                            .output()
-                            .unwrap()
-                            .stdout
-                    )
-                    .unwrap()
-                );
-                println!("\n#######################\n");
-            })
-            .join();
+        pages.into_iter().unchained_for_each(|page| {
+            println!(
+                "{}:\n\n{}",
+                &page,
+                String::from_utf8(
+                    std::process::Command::new("curl")
+                        .arg(&page)
+                        .output()
+                        .unwrap()
+                        .stdout
+                )
+                .unwrap()
+            );
+            println!("\n#######################\n");
+        });
+    }
+
+    #[test]
+    fn double() {
+        let _x = (0..100).unchained_for_each(|n| {
+            println!("{}", n * 2);
+        });
     }
 }

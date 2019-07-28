@@ -4,7 +4,7 @@ Trait that allows iterating on a collection while appliyng a function with a thr
 ## Example
 
 ```rust
-use unchained::{Finisher, Unchained};
+use unchained::Unchained;
 
 // download all the pages at the same time by using a thread per item
 fn download_all {
@@ -36,7 +36,6 @@ fn download_all_inner(pages: Vec<&'static str>) {
                 .unwrap()
             );
             println!("\n#######################\n");
-        })
-        .join();
+        });
 }
 ```
