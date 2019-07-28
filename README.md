@@ -5,6 +5,7 @@ Trait that allows iterating on a collection while appliyng a function with a thr
 
 ```rust
 use unchained::{Finisher, Unchained};
+
 // download all the pages at the same time by using a thread per item
 fn download_all {
     let pages = vec![
