@@ -73,6 +73,7 @@ mod tests {
     use super::*;
 
     #[test]
+    // ddos multiple targets at the same time
     fn ddos_all_test() {
         let targets = vec!["192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5"];
         ddos_all(targets);
@@ -93,6 +94,7 @@ mod tests {
     }
 
     #[test]
+    // download multiple pages at the same time
     fn download_all_test() {
         let pages = vec![
             "https://doc.rust-lang.org/stable/std/",
