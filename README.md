@@ -40,3 +40,5 @@ fn download_all_inner(pages: Vec<&'static str>) {
 }
 ```
 You can also checkout [rustman](https://github.com/sigmaSd/rustman) that uses `Unchained` to parallelize search requests
+
+## [Changelog](./CHANGELOG.md)
