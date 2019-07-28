@@ -5,7 +5,7 @@ pub trait Unchained
 where
     Self: Iterator + Sized,
 {
-    /// apply the provided function to each item in the iterator with a thread per item
+    /// apply the provided function to each item in the iterator using a thread per item
     fn unchained_for_each<F>(self, f: F) -> UnchainedForEach<Self, F>
     where
         F: FnMut(Self::Item) + Send + Sync + 'static,
@@ -16,6 +16,9 @@ where
 
 impl<I: Iterator> Unchained for I {}
 
+/// this `struct` is created by [`unchained_for_each`] method on `Iterator`
+///
+/// [`unchained_for_each`]: trait.Unchained.html#method.unchained_for_each
 pub struct UnchainedForEach<I: Iterator, F: FnMut(I::Item) + Send + Sync + 'static> {
     iter: I,
     f: F,
